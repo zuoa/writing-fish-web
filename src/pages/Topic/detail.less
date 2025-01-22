@@ -14,11 +14,26 @@
         margin-top: 24px;
       }
 
-      :global {
+      .sectionHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
         .ant-typography {
           margin-bottom: 0;
         }
+      }
 
+      .ant-typography {
+        margin-bottom: 16px;
+      }
+
+      .optionsGroup {
+        margin-left: 24px;
+      }
+
+      :global {
         .ant-input, .ant-input-textarea {
           margin-top: 8px;
         }
@@ -67,4 +82,18 @@
       padding: 6px 16px;
     }
   }
+}
+
+.generatedContent {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.contentBox {
+  padding: 16px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  min-height: 60px;
 } 

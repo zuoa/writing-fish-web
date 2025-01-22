@@ -7,8 +7,9 @@ import {
   LeftOutlined,
   PlusOutlined,
   SaveOutlined,
+  CopyOutlined,
 } from '@ant-design/icons';
-import { Button, Card, Input, Radio, Space, Tabs, Tag, Typography, message, Modal, Form } from 'antd';
+import { Button, Card, Input, Radio, Space, Tabs, Tag, Typography, message, Modal, Form, Select, Checkbox } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 import styles from './detail.less';
@@ -26,6 +27,10 @@ const TopicDetail: React.FC = () => {
   const [materialForm] = Form.useForm();
   const [isUrlFetching, setIsUrlFetching] = useState(false);
   const [activeKey, setActiveKey] = useState("1");
+  const [selectedAgent, setSelectedAgent] = useState<string>();
+  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+  const [generatedTitle, setGeneratedTitle] = useState<string>();
+  const [generatedContent, setGeneratedContent] = useState<string>();
 
   useEffect(() => {
     getTopic({ id: parseInt(id || '') }).then((res) => {
@@ -432,10 +437,162 @@ const TopicDetail: React.FC = () => {
     );
   };
 
-  // 输出设置 Tab - 现在是空的，可以根据需要添加其他设置
-  const renderOutputSettings = () => (
-    <div className={styles.content}>{/* 可以根据需要添加其他输出设置 */}</div>
-  );
+  // 内容生产 Tab
+  const handleCopy = (text: string, type: '标题' | '内容') => {
+    navigator.clipboard.writeText(text).then(() => {
+      message.success(`${type}已复制到剪贴板`);
+    }).catch(() => {
+      message.error('复制失败，请手动复制');
+    });
+  };
+
+  const renderContentGeneration = () => {
+    const agentOptions = [
+      { label: '专业写手', value: 'professional' },
+      { label: '科技写手', value: 'tech' },
+      { label: '文学写手', value: 'literature' },
+    ];
+
+    const handleExecute = () => {
+      if (!selectedAgent) {
+        message.warning('请先选择写手');
+        return;
+      }
+
+      message.loading('正在生成内容...', 0);
+      // TODO: 调用后端接口
+      setTimeout(() => {
+        message.destroy();
+        // 模拟生成的内容
+        setGeneratedTitle('AI 智能写作：让内容创作更高效');
+        setGeneratedContent('人工智能技术的快速发展正在改变着内容创作的方式。通过深度学习和自然语言处理技术，AI写手能够理解上下文、把握主题重点，生成符合人类阅读习惯的高质量内容。\n\n不仅如此，AI写手还能够快速处理和整合大量素材，从中提炼出关键信息，大大提高了内容创作的效率。这使得创作者能够将更多精力投入到创意和策略的构思中。\n\n然而，AI写手并非要取代人类写手，而是要成为人类写手的得力助手。通过人机协作，能够实现内容创作的提质增效，为用户带来更好的阅读体验。');
+        message.success('内容生成成功');
+      }, 1500);
+    };
+
+    return (
+      <div className={styles.content}>
+        <div className={styles.section}>
+          <Typography.Title level={5}>写手 Agent</Typography.Title>
+          <div className={styles.optionsGroup}>
+            <Radio.Group
+              value={selectedAgent}
+              onChange={(e) => setSelectedAgent(e.target.value)}
+            >
+              <Space direction="vertical">
+                {agentOptions.map(option => (
+                  <Radio key={option.value} value={option.value}>
+                    {option.label}
+                  </Radio>
+                ))}
+              </Space>
+            </Radio.Group>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <Button
+            type="primary"
+            disabled={!selectedAgent}
+            onClick={handleExecute}
+          >
+            开始生成
+          </Button>
+        </div>
+
+        {(generatedTitle || generatedContent) && (
+          <div className={styles.generatedContent}>
+            {generatedTitle && (
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <Typography.Title level={5}>生成的标题</Typography.Title>
+                  <Button
+                    type="link"
+                    icon={<CopyOutlined />}
+                    onClick={() => handleCopy(generatedTitle, '标题')}
+                  >
+                    复制
+                  </Button>
+                </div>
+                <div className={styles.contentBox}>
+                  {generatedTitle}
+                </div>
+              </div>
+            )}
+            
+            {generatedContent && (
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <Typography.Title level={5}>生成的内容</Typography.Title>
+                  <Button
+                    type="link"
+                    icon={<CopyOutlined />}
+                    onClick={() => handleCopy(generatedContent, '内容')}
+                  >
+                    复制
+                  </Button>
+                </div>
+                <div className={styles.contentBox}>
+                  <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
+                    {generatedContent}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // 新增渠道分发 Tab
+  const renderChannelDistribution = () => {
+    const channelOptions = [
+      { label: '微信公众号', value: 'wechat' },
+      { label: '知乎', value: 'zhihu' },
+      { label: '头条号', value: 'toutiao' },
+      { label: '企业官网', value: 'website' },
+    ];
+
+    const handleDistribute = (channel: string) => {
+      message.loading('正在分发...', 0);
+      // TODO: 调用后端接口
+      setTimeout(() => {
+        message.destroy();
+        message.success('分发成功');
+      }, 1500);
+    };
+
+    return (
+      <div className={styles.content}>
+        <div className={styles.section}>
+          <Typography.Title level={5}>渠道选择</Typography.Title>
+          <div className={styles.optionsGroup}>
+            <Checkbox.Group>
+              <Space direction="vertical">
+                {channelOptions.map(option => (
+                  <Checkbox key={option.value} value={option.value}>
+                    {option.label}
+                    <Button
+                      type="primary"
+                      size="small"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDistribute(option.value);
+                      }}
+                      style={{ marginLeft: 8 }}
+                    >
+                      分发
+                    </Button>
+                  </Checkbox>
+                ))}
+              </Space>
+            </Checkbox.Group>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={styles.topicDetail}>
@@ -508,8 +665,19 @@ const TopicDetail: React.FC = () => {
           >
             {renderMaterials()}
           </TabPane>
-          <TabPane tab="输出设置" key="3">
-            {renderOutputSettings()}
+          <TabPane 
+            tab={
+              <span style={{ marginRight: 24 }}>内容生产</span>
+            }
+            key="3"
+          >
+            {renderContentGeneration()}
+          </TabPane>
+          <TabPane 
+            tab="渠道分发"
+            key="4"
+          >
+            {renderChannelDistribution()}
           </TabPane>
         </Tabs>
       </Card>
