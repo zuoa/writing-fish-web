@@ -7,27 +7,30 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: '@umijs/max',
+    title: '码向未来',
+  },
+  proxy: {
+    '/api': {
+      target: 'http://localhost:5090/',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
   },
   routes: [
     {
       path: '/',
-      redirect: '/home',
+      redirect: '/draft',
     },
     {
-      name: '首页',
-      path: '/home',
-      component: './Home',
+      path: '/topic',
+      component: '@/pages/Topic',
+      name: '选题管理',
     },
+
     {
-      name: '权限演示',
-      path: '/access',
-      component: './Access',
-    },
-    {
-      name: ' CRUD 示例',
-      path: '/table',
-      component: './Table',
+      path: '/draft',
+      component: '@/pages/Draft',
+      name: '草稿管理',
     },
   ],
   npmClient: 'npm',

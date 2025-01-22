@@ -3,27 +3,28 @@
 
 declare namespace API {
   interface PageInfo {
-    /** 
-1 */
+    /**
+     1 */
     current?: number;
     pageSize?: number;
     total?: number;
     list?: Array<Record<string, any>>;
   }
 
+  interface Result {
+    success?: boolean;
+    code?: number;
+    message?: string;
+    data?: Record<string, any>;
+  }
+
   interface PageInfo_UserInfo_ {
-    /** 
-1 */
+    /**
+     1 */
     current?: number;
     pageSize?: number;
     total?: number;
     list?: Array<UserInfo>;
-  }
-
-  interface Result {
-    success?: boolean;
-    errorMessage?: string;
-    data?: Record<string, any>;
   }
 
   interface Result_PageInfo_UserInfo__ {
@@ -62,6 +63,37 @@ declare namespace API {
     nickName?: string;
     /** email */
     email?: string;
+  }
+
+  interface Topic {
+    id?: number;
+    title?: string;
+    description?: string;
+    points?: string;
+  }
+
+  interface Result_Topic_ {
+    success?: boolean;
+    code?: number;
+    message?: string;
+    data?: Topic;
+  }
+
+
+  interface PageInfo_Topic_ {
+    /**
+     1 */
+    page?: number;
+    page_size?: number;
+    total?: number;
+    list?: Array<Topic>;
+  }
+
+  interface Result_PageInfo_Topic__ {
+    success?: boolean;
+    code?: number;
+    message?: string;
+    data?: PageInfo_Topic_;
   }
 
   type definitions_0 = null;

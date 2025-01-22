@@ -1,0 +1,202 @@
+.topicManagement {
+  padding: 24px;
+  
+  .topicHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px !important;
+    padding: 0 16px;
+    
+    .title {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    :global(.ant-btn) {
+      margin-left: 16px;
+    }
+  }
+
+  .topicForm {
+    .topicName {
+      margin-bottom: 16px;
+    }
+    
+    .topicDesc {
+      margin-bottom: 16px;
+    }
+    
+    .topicKeypoints {
+      margin-bottom: 24px;
+    }
+  }
+
+  .materialsSection {
+    margin-top: 24px;
+    
+    .materialsHeader {
+      margin-bottom: 16px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .materialItem {
+      background: #fafafa;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      
+      .materialType {
+        margin-bottom: 8px;
+        color: #666;
+      }
+      
+      .ant-input {
+        margin-top: 8px;
+      }
+    }
+    
+    .addMaterial {
+      margin-top: 16px;
+    }
+  }
+}
+
+.topicCard {
+  height: 300px !important;
+  
+  :global(.ant-card-head-title) {
+    white-space: normal;
+  }
+
+  .cardContent {
+    .description, .keyPoints {
+      h4 {
+        margin-bottom: 8px;
+        color: #666;
+        font-size: 14px;
+      }
+
+      p {
+        margin-bottom: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        white-space: pre-line;
+      }
+    }
+
+    .keyPoints {
+      margin-top: 8px;
+      
+      p {
+        -webkit-line-clamp: 4;
+      }
+    }
+  }
+
+  .materials {
+    margin-top: 16px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+
+    h4 {
+      margin-bottom: 12px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .materialItem {
+      width: 100%;
+
+      .materialHeader {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .materialType {
+          display: inline-block;
+          padding: 2px 8px;
+          border-radius: 2px;
+          font-size: 12px;
+          margin-right: 8px;
+          flex-shrink: 0;
+
+          &.main {
+            background: #e6f7ff;
+            color: #1890ff;
+          }
+
+          &.auxiliary {
+            background: #f6ffed;
+            color: #52c41a;
+          }
+        }
+
+        .materialTitle {
+          font-weight: 500;
+          
+          a {
+            color: #1890ff;
+            
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+      .materialContent {
+        color: #666;
+        font-size: 14px;
+        margin: 8px 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+    }
+
+    :global {
+      .ant-list-item {
+        padding: 12px 0;
+      }
+    }
+  }
+}
+
+.container {
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.cardList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  height: 100%;
+  
+  :global {
+    .ant-card-head-title {
+      white-space: normal;
+    }
+  }
+} 
