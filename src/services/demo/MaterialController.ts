@@ -1,32 +1,10 @@
 import { request } from '@umijs/max';
 
-export async function queryTopicList(
-  params: {
-    // query
-    /** keyword */
-    keyword?: string;
-    /** current */
-    page?: number;
-    /** pageSize */
-    page_size?: number;
-  },
+export async function addMaterial(
+  body?: API.Material,
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_PageInfo_Topic__>('/api/topic/list', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: params,
-    ...(options || {}),
-  });
-}
-
-export async function addTopic(
-  body?: API.Topic,
-  options?: { [key: string]: any },
-) {
-  return request<API.Result_Topic_>('/api/topic/create', {
+  return request<API.Result_Material_>('/api/material/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -36,13 +14,31 @@ export async function addTopic(
   });
 }
 
-export async function getTopic(
+export async function getMaterial(
   params: {
     id: number;
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.Result_Topic_>('/api/topic/detail', {
+  return request<API.Result_Material_>('/api/material/detail', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: params,
+    ...(options || {}),
+  });
+}
+
+export async function fetchUrl(
+  params: {
+    // query
+    /** url */
+    url: string;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<API.Result>('/api/material/fetch', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

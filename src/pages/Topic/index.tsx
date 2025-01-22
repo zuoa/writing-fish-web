@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Modal, Form, Input, List, message, Radio, Tabs } from 'antd';
-import { PlusOutlined, LinkOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Button, Modal, Form, Input, List, message, Radio, Tabs, Tag } from 'antd';
+import { PlusOutlined, LinkOutlined, EditOutlined, FileTextOutlined } from '@ant-design/icons';
 import './index.less';
 import { addTopic, queryTopicList } from '@/services/demo/TopicController';
 import styles from './index.less';
+import { addMaterial, fetchUrl } from '@/services/demo/MaterialController';
+import { history } from 'umi';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -62,13 +64,15 @@ const TopicsPage: React.FC = () => {
     try {
       setIsUrlFetching(true);
       message.loading('正在解析链接...', 0);
+
+      const resp = await fetchUrl({url})
       // 实际项目中这里应该调用后端API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // await new Promise(resolve => setTimeout(resolve, 1500));
       
       // 模拟解析结果
       materialForm.setFieldsValue({
-        title: '解析的标题',  // 这里应该是API返回的标题
-        content: '解析的内容'  // 这里应该是API返回的内容
+        title: resp?.data?.title,  // 这里应该是API返回的标题
+        content: resp?.data?.content  // 这里应该是API返回的内容
       });
       message.destroy();
       message.success('解析成功');
@@ -79,35 +83,6 @@ const TopicsPage: React.FC = () => {
     }
   };
 
-  const handleAddMaterial = async (values: any) => {
-    try {
-      if (!currentTopicId) return;
-      
-      const newMaterial: Material = {
-        id: Date.now(),
-        type: values.type,
-        title: values.title,
-        content: values.content,
-        inputType: values.url ? 'url' : 'manual'
-      };
-
-      setTopics(topics.map(topic => {
-        if (topic.id === currentTopicId) {
-          return {
-            ...topic,
-            materials: [...topic.materials, newMaterial]
-          };
-        }
-        return topic;
-      }));
-
-      message.success('素材添加成功');
-      setIsMaterialModalVisible(false);
-      materialForm.resetFields();
-    } catch (error) {
-      message.error('素材添加失败');
-    }
-  };
 
   const showMaterialModal = (topicId: number) => {
     setCurrentTopicId(topicId);
@@ -141,22 +116,17 @@ const TopicsPage: React.FC = () => {
         renderItem={(topic) => (
           <List.Item>
             <Card 
-              title={topic.title}
+              title={
+                <a onClick={() => history.push(`/topic/${topic.id}`)}>{topic.title}</a>
+              }
               className={styles.topicCard}
               hoverable
               extra={
-                <Button 
-                  type="link" 
-                  icon={<PlusOutlined />}
-                  onClick={() => showMaterialModal(topic.id)}
-                >
-                  添加素材
-                </Button>
+                <Tag color="blue">{topic.materials?.length || 0} 个素材</Tag>
               }
             >
               <div className={styles.cardContent}>
                 <div className={styles.description}>
-                  <h4>选题描述：</h4>
                   <p>{topic.description}</p>
                 </div>
                 <div className={styles.keyPoints}>
@@ -260,92 +230,7 @@ const TopicsPage: React.FC = () => {
         </Form>
       </Modal>
 
-      <Modal
-        title="添加素材"
-        open={isMaterialModalVisible}
-        onCancel={() => {
-          setIsMaterialModalVisible(false);
-          materialForm.resetFields();
-        }}
-        footer={null}
-        width={900}
-      >
-        <Form
-          form={materialForm}
-          layout="vertical"
-          onFinish={handleAddMaterial}
-        >
-          <Form.Item
-            name="type"
-            label="素材类型"
-            rules={[{ required: true, message: '请选择素材类型' }]}
-          >
-            <Radio.Group>
-              <Radio value="main">主要素材</Radio>
-              <Radio value="auxiliary">辅助素材</Radio>
-            </Radio.Group>
-          </Form.Item>
 
-          <Form.Item
-            name="url"
-            label="链接地址"
-          >
-            <Input.Group compact>
-              <Form.Item
-                name="url"
-                noStyle
-              >
-                <Input 
-                  style={{ width: 'calc(100% - 88px)' }} 
-                  placeholder="输入链接后点击提取" 
-                />
-              </Form.Item>
-              <Button 
-                type="primary"
-                onClick={handleUrlFetch}
-                loading={isUrlFetching}
-                style={{ width: '88px' }}
-              >
-                提取
-              </Button>
-            </Input.Group>
-          </Form.Item>
-
-          <Form.Item
-            name="title"
-            label="素材标题"
-            rules={[{ required: true, message: '请输入素材标题' }]}
-          >
-            <Input placeholder="请输入素材标题" />
-          </Form.Item>
-
-          <Form.Item
-            name="content"
-            label="素材内容"
-            rules={[{ required: true, message: '请输入素材内容' }]}
-          >
-            <TextArea 
-              rows={4} 
-              placeholder="请输入素材内容" 
-            />
-          </Form.Item>
-
-          <Form.Item className={styles.formFooter}>
-            <Button type="primary" htmlType="submit">
-              确定
-            </Button>
-            <Button 
-              onClick={() => {
-                setIsMaterialModalVisible(false);
-                materialForm.resetFields();
-              }}
-              style={{ marginLeft: 8 }}
-            >
-              取消
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };

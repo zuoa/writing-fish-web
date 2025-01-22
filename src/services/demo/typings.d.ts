@@ -70,6 +70,7 @@ declare namespace API {
     title?: string;
     description?: string;
     points?: string;
+    materials?: Material[];
   }
 
   interface Result_Topic_ {
@@ -78,7 +79,6 @@ declare namespace API {
     message?: string;
     data?: Topic;
   }
-
 
   interface PageInfo_Topic_ {
     /**
@@ -94,6 +94,24 @@ declare namespace API {
     code?: number;
     message?: string;
     data?: PageInfo_Topic_;
+  }
+
+  interface Material {
+    id?: number;
+    topic_id?: number;
+    title?: string;
+    content?: string;
+    flag_primary?: number;
+    status?: string;
+    create_at?: string;
+    update_at?: string;
+  }
+
+  interface Result_Material_ {
+    success?: boolean;
+    code?: number;
+    message?: string;
+    data?: Material;
   }
 
   type definitions_0 = null;

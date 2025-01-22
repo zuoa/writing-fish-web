@@ -26,6 +26,11 @@ export default defineConfig({
       component: '@/pages/Topic',
       name: '选题管理',
     },
+    {
+      path: '/topic/:id',
+      component: '@/pages/Topic/detail',
+      exact: true,
+    },
 
     {
       path: '/draft',

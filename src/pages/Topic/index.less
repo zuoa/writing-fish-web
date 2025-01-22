@@ -66,20 +66,35 @@
 
 .topicCard {
   height: 300px !important;
+  overflow: hidden;
   
-  :global(.ant-card-head-title) {
-    white-space: normal;
+  :global(.ant-card-body) {
+    height: calc(100% - 57px - 48px);
+    overflow: hidden;
+  }
+
+  :global(.ant-card-actions) {
+    background: #fafafa;
+    
+    li {
+      margin: 0;
+    }
   }
 
   .cardContent {
+    height: 100%;
+    overflow: hidden;
+
     .description, .keyPoints {
       h4 {
         margin-bottom: 8px;
-        color: #666;
+        color: #333;
         font-size: 14px;
+        font-weight: bold;
       }
 
       p {
+        color: #666666;
         margin-bottom: 16px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -97,74 +112,75 @@
         -webkit-line-clamp: 4;
       }
     }
-  }
 
-  .materials {
-    margin-top: 16px;
-    border-top: 1px solid #f0f0f0;
-    padding-top: 16px;
+    .materials {
+      margin-top: 16px;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 16px;
+      height: calc(100% - 160px);
+      overflow: hidden;
 
-    h4 {
-      margin-bottom: 12px;
-      color: #666;
-      font-size: 14px;
-    }
+      h4 {
+        margin-bottom: 12px;
+        color: #666;
+        font-size: 14px;
+      }
 
-    .materialItem {
-      width: 100%;
+      :global(.ant-list) {
+        height: calc(100% - 30px);
+        overflow: hidden;
+      }
 
-      .materialHeader {
-        display: flex;
-        align-items: center;
-        margin-bottom: 8px;
+      .materialItem {
+        width: 100%;
 
-        .materialType {
-          display: inline-block;
-          padding: 2px 8px;
-          border-radius: 2px;
-          font-size: 12px;
-          margin-right: 8px;
-          flex-shrink: 0;
+        .materialHeader {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px;
 
-          &.main {
-            background: #e6f7ff;
-            color: #1890ff;
+          .materialType {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 12px;
+            margin-right: 8px;
+            flex-shrink: 0;
+
+            &.main {
+              background: #e6f7ff;
+              color: #1890ff;
+            }
+
+            &.auxiliary {
+              background: #f6ffed;
+              color: #52c41a;
+            }
           }
 
-          &.auxiliary {
-            background: #f6ffed;
-            color: #52c41a;
-          }
-        }
-
-        .materialTitle {
-          font-weight: 500;
-          
-          a {
-            color: #1890ff;
+          .materialTitle {
+            font-weight: 500;
             
-            &:hover {
-              text-decoration: underline;
+            a {
+              color: #1890ff;
+              
+              &:hover {
+                text-decoration: underline;
+              }
             }
           }
         }
-      }
 
-      .materialContent {
-        color: #666;
-        font-size: 14px;
-        margin: 8px 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-    }
-
-    :global {
-      .ant-list-item {
-        padding: 12px 0;
+        .materialContent {
+          color: #666;
+          font-size: 14px;
+          margin: 8px 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
       }
     }
   }

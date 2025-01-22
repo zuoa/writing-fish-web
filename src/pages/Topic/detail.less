@@ -1,0 +1,70 @@
+.topicDetail {
+  padding: 24px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .content {
+    .section {
+      & + .section {
+        margin-top: 24px;
+      }
+
+      :global {
+        .ant-typography {
+          margin-bottom: 0;
+        }
+
+        .ant-input, .ant-input-textarea {
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+
+  .materialHeader {
+    margin-bottom: 16px;
+  }
+
+  .materialContent {
+    padding: 16px;
+    background-color: #fafafa;
+    border-radius: 4px;
+
+    .materialItem {
+      & + .materialItem {
+        margin-top: 24px;
+      }
+
+      .label {
+        margin-bottom: 8px;
+      }
+
+      .value {
+        :global {
+          .ant-typography {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .deleteIcon {
+    margin-left: 8px;
+    color: #FFF;
+    &:hover {
+      color: #ff7875;
+    }
+  }
+
+  :global {
+    .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+      padding: 6px 16px;
+    }
+  }
+} 
