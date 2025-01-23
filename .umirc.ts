@@ -38,5 +38,19 @@ export default defineConfig({
       name: '草稿管理',
     },
   ],
+
   npmClient: 'npm',
+  plugins: ['@umijs/max-plugin-openapi/dist/index.js'],
+
+  openAPI: {
+    requestLibPath: "import { request } from '@umijs/max'",
+    // schemaPath: "http://127.0.0.1:5090/apispec_1.json",
+    schemaPath:  'https://gw.alipayobjects.com/os/antfincdn/M%24jrzTTYJN/oneapi.json', // 或 './src/schema.json'
+    mock: false, // 设置为 true 启用 mock 数据
+    projectName: 'umi-max',
+
+  },
+  mfsu: {
+    strategy: 'normal',
+  },
 });
