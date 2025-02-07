@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Card, Button, Modal, Form, Input, List, message, Radio, Tabs, Tag } from 'antd';
 import { PlusOutlined, LinkOutlined, EditOutlined, FileTextOutlined } from '@ant-design/icons';
 import './index.less';
-import { addTopic, queryTopicList } from '@/services/demo/TopicController';
 import styles from './index.less';
 import { addMaterial, fetchUrl } from '@/services/demo/MaterialController';
 import { history } from 'umi';
+import { createWritingTopic, listWritingTopic, pageListWritingTopic } from '@/services/writing/writingTopic';
+import type { WritingTopic } from '@/services/writing/typings';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -26,29 +27,33 @@ const TopicsPage: React.FC = () => {
   const [materialForm] = Form.useForm();
   const [isUrlFetching, setIsUrlFetching] = useState(false);
 
-  const [topics, setTopics] = useState<[]>([]);
+  const [topics, setTopics] = useState<WritingTopic[]>([]);
+
 
   useEffect(() => {
-    // 这里应该调用API获取数据
-    queryTopicList({
-      page: 1,
-      page_size: 10
-    }).then(res => {
+    pageListWritingTopic({}).then(res => {
       console.log(res);
-      setTopics(res.data.list);
+      setTopics(res?.data?.list || []);
     })
+
 
   }, []);
 
   const handleAdd = async (values: any) => {
     try {
-
-      addTopic(values).then(res => {
+      createWritingTopic(values).then(res => {
         console.log(res);
         message.success('添加成功');
         setIsModalVisible(false);
         form.resetFields();
       });
+
+      // addTopic(values).then(res => {
+      //   console.log(res);
+      //   message.success('添加成功');
+      //   setIsModalVisible(false);
+      //   form.resetFields();
+      // });
     } catch (error) {
       message.error('添加失败');
     }

@@ -9,13 +9,6 @@ export default defineConfig({
   layout: {
     title: '码向未来',
   },
-  proxy: {
-    '/api': {
-      target: 'http://localhost:5090/',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-    },
-  },
   routes: [
     {
       path: '/',
@@ -37,18 +30,41 @@ export default defineConfig({
       component: '@/pages/Draft',
       name: '草稿管理',
     },
+
+    {
+      path: '/agent',
+      name: 'Agent 管理',
+      routes: [
+        {
+          path: '/agent/llm',
+          name: '模型管理',
+          component: '@/pages/llm',
+        },
+        {
+          path: '/agent/list',
+          name: 'Agent 列表',
+          component: '@/pages/agent',
+        },
+      ],
+    },
   ],
 
   npmClient: 'npm',
   plugins: ['@umijs/max-plugin-openapi/dist/index.js'],
 
+  proxy: {
+    '/api': {
+      target: 'http://127.0.0.1:9050',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
+  },
   openAPI: {
     requestLibPath: "import { request } from '@umijs/max'",
-    // schemaPath: "http://127.0.0.1:5090/apispec_1.json",
-    schemaPath:  'https://gw.alipayobjects.com/os/antfincdn/M%24jrzTTYJN/oneapi.json', // 或 './src/schema.json'
+    schemaPath: 'http://127.0.0.1:9050/v2/api-docs',
+    // schemaPath:  'https://gw.alipayobjects.com/os/antfincdn/M%24jrzTTYJN/oneapi.json', // 或 './src/schema.json'
     mock: false, // 设置为 true 启用 mock 数据
-    projectName: 'umi-max',
-
+    apiPrefix: "'/api'",
   },
   mfsu: {
     strategy: 'normal',

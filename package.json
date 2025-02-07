@@ -1,9 +1,11 @@
 {
   "private": true,
+  "name": "writing",
   "author": "yujian <yujian@airimos.com>",
   "scripts": {
     "build": "max build",
     "dev": "max dev",
+    "openapi": "max openapi",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
     "prepare": "husky",
