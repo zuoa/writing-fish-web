@@ -65,6 +65,21 @@ export async function pageListLlm(
   );
 }
 
+/** 测试 POST /llm/test */
+export async function testLlm(
+  body: API.LlmDto,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResponseEntityVoid_>(`/api/llm/test`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 编辑 POST /llm/update */
 export async function updateLlm(
   body: API.LlmDto,
