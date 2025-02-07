@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Form, Input, message } from 'antd';
+// @ts-ignore
 import type { Llm } from '@/services/writing/typings';
 import { createLlm, updateLlm } from '@/services/writing/llm';
 
@@ -73,12 +74,20 @@ const LlmForm: React.FC<LlmFormProps> = ({
         >
           <Input placeholder="请输入基础URL" />
         </Form.Item>
+
         <Form.Item
           name="modelApiKey"
           label="API密钥"
           rules={[{ required: true, message: '请输入API密钥' }]}
         >
           <Input.Password placeholder="请输入API密钥" />
+        </Form.Item>
+        <Form.Item
+          name="httpProxy"
+          label="HTTP Proxy"
+          rules={[{ required: false, message: '请输入代理地址' }]}
+        >
+          <Input placeholder="请输入代理地址" />
         </Form.Item>
       </Form>
     </Modal>

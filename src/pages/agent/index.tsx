@@ -28,16 +28,6 @@ const AgentList: React.FC = () => {
       ellipsis: true,
     },
     {
-      title: '创建时间',
-      dataIndex: 'createAt',
-      valueType: 'dateTime',
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updateAt',
-      valueType: 'dateTime',
-    },
-    {
       title: '操作',
       valueType: 'option',
       render: (_, record) => [
@@ -55,7 +45,7 @@ const AgentList: React.FC = () => {
           title="确定要删除吗？"
           onConfirm={async () => {
             if (record.id) {
-              await deleteAgent(record.id);
+              await deleteAgent(record);
               message.success('删除成功');
               actionRef.current?.reload();
             }

@@ -1,4 +1,5 @@
 import { getMaterial, addMaterial, fetchUrl } from '@/services/demo/MaterialController';
+// @ts-ignore
 import type { Topic } from '@/services/demo/typings';
 import {
   CloseOutlined,
