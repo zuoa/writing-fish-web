@@ -45,7 +45,7 @@ const LlmForm: React.FC<LlmFormProps> = ({
       const values = await form.validateFields();
       console.log(values);
       const data = await testLlm(values)
-      setTestResponse(data.data);
+      setTestResponse(data.data || '');
       message.success(data.message);
     } catch (error) {
       console.log(error);

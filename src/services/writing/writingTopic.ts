@@ -32,6 +32,21 @@ export async function deleteWritingTopic(
   });
 }
 
+/** 生成文章 POST /writingTopic/generate */
+export async function generateWritingTopicArticle(
+  body: API.WritingTopicDto,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResponseEntityVoid_>(`/api/writingTopic/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 查询单个 POST /writingTopic/get */
 export async function getWritingTopic(
   body: API.WritingTopicDto,

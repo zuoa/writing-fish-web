@@ -1,7 +1,9 @@
 // @ts-ignore
-import { fetchWritingMaterial,createWritingMaterial } from "@/services/writing/writingMaterial";
+import { fetchWritingMaterial,createWritingMaterial, deleteWritingMaterial } from "@/services/writing/writingMaterial";
 // @ts-ignore
-import { getWritingTopic } from "@/services/writing/writingTopic";
+import { generateWritingTopicArticle, getWritingTopic, updateWritingTopic } from '@/services/writing/writingTopic';
+// @ts-ignore
+import { listAgent } from "@/services/writing/agent";
 
 
 import {
@@ -30,12 +32,11 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './detail.less';
-import WritingMaterial = API.WritingMaterial;
-import WritingTopic = API.WritingTopic;
 
+// @ts-ignore
+import type { WritingMaterial,  WritingTopic, Agent} from '@/services/writing/typings';
 const { Paragraph, Title, Text } = Typography;
 const { TextArea } = Input;
-const { TabPane } = Tabs;
 
 const TopicDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,14 +46,22 @@ const TopicDetail: React.FC = () => {
   const [materialForm] = Form.useForm();
   const [isUrlFetching, setIsUrlFetching] = useState(false);
   const [activeKey, setActiveKey] = useState('1');
+  const [agents, setAgents] = useState<Agent[]>();
   const [selectedAgent, setSelectedAgent] = useState<string>();
   const [generatedTitle, setGeneratedTitle] = useState<string>();
   const [generatedContent, setGeneratedContent] = useState<string>();
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     getWritingTopic({ id: parseInt(id || '') }).then((res) => {
       if (res.success) {
         setEditData(res.data);
+      }
+    });
+
+    listAgent({}).then((res) => {
+      if (res.success) {
+        setAgents(res.data);
       }
     });
   }, []);
@@ -61,22 +70,52 @@ const TopicDetail: React.FC = () => {
     if (!editData) return;
 
     try {
-      // 保存每个素材
-      for (const material of editData.materials) {
-        const materialDto: API.WritingMaterialDto = {
-          topicId: parseInt(id || ''),
-          flagPrimary: material.type === 'primary' ? 1 : 0,
-          title: material.title || '',
-          url: material.url || '',
-          content: material.content || '',
-        };
-        await createWritingMaterial(materialDto);
+      // Save based on active tab
+      switch (activeKey) {
+        case '1': // 选题信息 tab
+          const topicDto: API.WritingTopicDto = {
+            id: editData?.id,
+            title: editData?.title,
+            description: editData?.description,
+            points: editData?.points,
+          };
+          const{success} = await updateWritingTopic(topicDto);
+          if(success){
+            messageApi.success('选题信息保存成功');
+          }else{
+            messageApi.error('选题信息保存失败');
+          }
+          break;
+        
+        case '2': // 内容素材 tab
+          // Save each material
+          for (const material of editData?.materials) {
+            const materialDto: API.WritingMaterialDto = {
+              topicId: parseInt(id || ''),
+              flagPrimary: material.flagPrimary === 1 ? 1 : 0,
+              title: material.title || '',
+              url: material.url || '',
+              content: material.content || '',
+            };
+            await createWritingMaterial(materialDto);
+          }
+          messageApi.success('素材保存成功');
+          break;
+
+        case '3': // 内容生产 tab
+          // TODO: Add API call to save generated content
+          messageApi.success('生成内容保存成功');
+          break;
+
+        case '4': // 渠道分发 tab
+          // TODO: Add API call to save distribution settings
+          messageApi.success('渠道设置保存成功');
+          break;
       }
 
-      message.success('保存成功');
       setIsEditing(false);
     } catch (error) {
-      message.error('保存失败');
+      messageApi.error('保存失败');
     }
   };
 
@@ -94,23 +133,23 @@ const TopicDetail: React.FC = () => {
   const handleUrlFetch = async () => {
     const url = materialForm.getFieldValue('url');
     if (!url) {
-      message.error('请输入链接地址');
+      messageApi.error('请输入链接地址');
       return;
     }
 
     try {
       setIsUrlFetching(true);
-      message.loading('正在解析链接...', 0);
+      messageApi.loading('正在解析链接...', 0);
 
       const resp = await fetchWritingMaterial({url});
       materialForm.setFieldsValue({
         title: resp?.data?.title,
         content: resp?.data?.content,
       });
-      message.destroy();
-      message.success('解析成功');
+      messageApi.destroy();
+      messageApi.success('解析成功');
     } catch (error) {
-      message.error('链接解析失败');
+      messageApi.error('链接解析失败');
     } finally {
       setIsUrlFetching(false);
     }
@@ -129,9 +168,9 @@ const TopicDetail: React.FC = () => {
 
       setIsMaterialModalVisible(false);
       materialForm.resetFields();
-      message.success('素材添加成功');
+      messageApi.success('素材添加成功');
     } catch (error) {
-      message.error('素材添加失败');
+      messageApi.error('素材添加失败');
     }
   };
 
@@ -165,7 +204,7 @@ const TopicDetail: React.FC = () => {
         </Form.Item>
 
         <Form.Item name="url" label="链接地址">
-          <Input.Group compact>
+          <Space.Compact style={{ width: '100%' }}>
             <Form.Item name="url" noStyle>
               <Input
                 style={{ width: 'calc(100% - 88px)' }}
@@ -180,7 +219,7 @@ const TopicDetail: React.FC = () => {
             >
               提取
             </Button>
-          </Input.Group>
+          </Space.Compact>
         </Form.Item>
 
         <Form.Item
@@ -277,24 +316,138 @@ const TopicDetail: React.FC = () => {
 
   // 内容素材 Tab
   const renderMaterials = () => {
+    // Don't show action bar if there are no materials
+    const showActionBar = editData?.materials && editData.materials.length > 0;
+
     const removeMaterial = (index: number) => {
       Modal.confirm({
         title: '确认删除',
         content: '确定要删除这个素材吗？',
         okText: '确定',
         cancelText: '取消',
-        onOk: () => {
+        onOk: async () => {
           if (!editData?.materials) return;
-          const newMaterials = [...editData.materials];
-          newMaterials.splice(index, 1);
-          setEditData((prev: WritingTopic | undefined) => prev ? ({ ...prev, materials: newMaterials }) : prev);
-          message.success('删除成功');
+          const material = editData.materials[index];
+          
+          try {
+            // Call delete API
+            if (material.id) {
+              const { success } = await deleteWritingMaterial(material);
+              if (!success) {
+                messageApi.error('删除失败');
+                return;
+              }
+            }
+
+            // Update local state after successful API call
+            const newMaterials = [...editData.materials];
+            newMaterials.splice(index, 1);
+            setEditData((prev: WritingTopic | undefined) => 
+              prev ? ({ ...prev, materials: newMaterials }) : prev
+            );
+            messageApi.success('删除成功');
+          } catch (error) {
+            messageApi.error('删除失败');
+          }
         },
+      });
+    };
+
+    const handleExecute = () => {
+      if (!selectedAgent) {
+        messageApi.warning('请先选择写手');
+        return;
+      }
+
+      messageApi.loading({ content: '正在生成内容...', key: 'contentGen' });
+      generateWritingTopicArticle({ id: parseInt(id || ''), agentId: selectedAgent }).then((resp) => {
+        messageApi.destroy('contentGen');
+        if (resp.success) {
+          setGeneratedTitle(resp.data?.articleTitle);
+          setGeneratedContent(resp.data?.articleContent);
+          messageApi.success('内容生成成功');
+        } else {
+          messageApi.error('内容生成失败');
+        }
       });
     };
 
     return (
       <div className={styles.content}>
+        {showActionBar && (
+          <div className={styles.actionBar} style={{ 
+            marginBottom: 16,
+            padding: '16px 24px',
+            background: '#f5f5f5',
+            borderRadius: '8px',
+            border: '1px solid #e8e8e8'
+          }}>
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Typography.Text strong>AI 智能写作</Typography.Text>
+           
+                <Radio.Group
+                  value={selectedAgent}
+                  onChange={(e) => setSelectedAgent(e.target.value)}
+                >
+                  <Space>
+                    {agents?.map((agent) => (
+                      <Radio key={agent.id} value={agent.id}>
+                        {agent.agentName}
+                      </Radio>
+                    ))}
+                  </Space>
+                </Radio.Group>
+                <Button
+                  type="primary"
+                  disabled={!selectedAgent}
+                  onClick={handleExecute}
+                >
+                  开始生成
+                </Button>
+            </Space>
+          </div>
+        )}
+
+        {(generatedTitle || generatedContent) && (
+          <div className={styles.generatedContent} style={{ marginBottom: 16 }}>
+            {generatedTitle && (
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <Typography.Title level={5}>生成的标题</Typography.Title>
+                  <Button
+                    type="link"
+                    icon={<CopyOutlined />}
+                    onClick={() => handleCopy(generatedTitle, '标题')}
+                  >
+                    复制
+                  </Button>
+                </div>
+                <div className={styles.contentBox}>{generatedTitle}</div>
+              </div>
+            )}
+
+            {generatedContent && (
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <Typography.Title level={5}>生成的内容</Typography.Title>
+                  <Button
+                    type="link"
+                    icon={<CopyOutlined />}
+                    onClick={() => handleCopy(generatedContent, '内容')}
+                  >
+                    复制
+                  </Button>
+                </div>
+                <div className={styles.contentBox}>
+                  <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
+                    {generatedContent}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <Tabs
           type="card"
           items={editData?.materials?.map((material:WritingMaterial, index:number) => ({
@@ -456,109 +609,11 @@ const TopicDetail: React.FC = () => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        message.success(`${type}已复制到剪贴板`);
+        messageApi.success(`${type}已复制到剪贴板`);
       })
       .catch(() => {
-        message.error('复制失败，请手动复制');
+        messageApi.error('复制失败，请手动复制');
       });
-  };
-
-  const renderContentGeneration = () => {
-    const agentOptions = [
-      { label: '专业写手', value: 'professional' },
-      { label: '科技写手', value: 'tech' },
-      { label: '文学写手', value: 'literature' },
-    ] as const;
-
-    const handleExecute = () => {
-      if (!selectedAgent) {
-        message.warning('请先选择写手');
-        return;
-      }
-
-      message.loading({ content: '正在生成内容...', key: 'contentGen' });
-      // TODO: 调用后端接口
-      setTimeout(() => {
-        message.destroy('contentGen');
-        setGeneratedTitle('AI 智能写作：让内容创作更高效');
-        setGeneratedContent(
-          '人工智能技术的快速发展正在改变着内容创作的方式。通过深度学习和自然语言处理技术，AI写手能够理解上下文、把握主题重点，生成符合人类阅读习惯的高质量内容。\n\n不仅如此，AI写手还能够快速处理和整合大量素材，从中提炼出关键信息，大大提高了内容创作的效率。这使得创作者能够将更多精力投入到创意和策略的构思中。\n\n然而，AI写手并非要取代人类写手，而是要成为人类写手的得力助手。通过人机协作，能够实现内容创作的提质增效，为用户带来更好的阅读体验。',
-        );
-        message.success('内容生成成功');
-      }, 1500);
-    };
-
-    return (
-      <div className={styles.content}>
-        <div className={styles.section}>
-          <Typography.Title level={5}>写手 Agent</Typography.Title>
-          <div className={styles.optionsGroup}>
-            <Radio.Group
-              value={selectedAgent}
-              onChange={(e) => setSelectedAgent(e.target.value)}
-            >
-              <Space direction="vertical">
-                {agentOptions.map((option) => (
-                  <Radio key={option.value} value={option.value}>
-                    {option.label}
-                  </Radio>
-                ))}
-              </Space>
-            </Radio.Group>
-          </div>
-        </div>
-
-        <div className={styles.section}>
-          <Button
-            type="primary"
-            disabled={!selectedAgent}
-            onClick={handleExecute}
-          >
-            开始生成
-          </Button>
-        </div>
-
-        {(generatedTitle || generatedContent) && (
-          <div className={styles.generatedContent}>
-            {generatedTitle && (
-              <div className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <Typography.Title level={5}>生成的标题</Typography.Title>
-                  <Button
-                    type="link"
-                    icon={<CopyOutlined />}
-                    onClick={() => handleCopy(generatedTitle, '标题')}
-                  >
-                    复制
-                  </Button>
-                </div>
-                <div className={styles.contentBox}>{generatedTitle}</div>
-              </div>
-            )}
-
-            {generatedContent && (
-              <div className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <Typography.Title level={5}>生成的内容</Typography.Title>
-                  <Button
-                    type="link"
-                    icon={<CopyOutlined />}
-                    onClick={() => handleCopy(generatedContent, '内容')}
-                  >
-                    复制
-                  </Button>
-                </div>
-                <div className={styles.contentBox}>
-                  <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
-                    {generatedContent}
-                  </pre>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
   };
 
   // 新增渠道分发 Tab
@@ -571,11 +626,11 @@ const TopicDetail: React.FC = () => {
     ] as const;
 
     const handleDistribute = (channel: string) => {
-      message.loading({ content: '正在分发...', key: 'distribute' });
+      messageApi.loading({ content: '正在分发...', key: 'distribute' });
       // TODO: 调用后端接口
       setTimeout(() => {
-        message.destroy('distribute');
-        message.success('分发成功');
+        messageApi.destroy('distribute');
+        messageApi.success('分发成功');
       }, 1500);
     };
 
@@ -612,6 +667,7 @@ const TopicDetail: React.FC = () => {
 
   return (
     <div className={styles.topicDetail}>
+      {contextHolder}
       <div className={styles.header}>
         <Button
           type="link"
@@ -664,29 +720,24 @@ const TopicDetail: React.FC = () => {
             ) : null
           }
           onChange={(key) => setActiveKey(key)}
-        >
-          <TabPane
-            tab={<span style={{ marginRight: 24 }}>选题信息</span>}
-            key="1"
-          >
-            {renderBasicInfo()}
-          </TabPane>
-          <TabPane
-            tab={<span style={{ marginRight: 24 }}>内容素材</span>}
-            key="2"
-          >
-            {renderMaterials()}
-          </TabPane>
-          <TabPane
-            tab={<span style={{ marginRight: 24 }}>内容生产</span>}
-            key="3"
-          >
-            {renderContentGeneration()}
-          </TabPane>
-          <TabPane tab="渠道分发" key="4">
-            {renderChannelDistribution()}
-          </TabPane>
-        </Tabs>
+          items={[
+            {
+              key: "1",
+              label: <span style={{ marginRight: 24 }}>选题信息</span>,
+              children: renderBasicInfo()
+            },
+            {
+              key: "2", 
+              label: <span style={{ marginRight: 24 }}>内容素材</span>,
+              children: renderMaterials()
+            },
+            {
+              key: "4",
+              label: "渠道分发",
+              children: renderChannelDistribution()
+            }
+          ]}
+        />
       </Card>
       {materialModal}
     </div>

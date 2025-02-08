@@ -809,6 +809,8 @@ declare namespace API {
     data?: Agent;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityBoolean_ = {
@@ -818,6 +820,8 @@ declare namespace API {
     data?: boolean;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityConfig_ = {
@@ -826,6 +830,8 @@ declare namespace API {
     data?: Config;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListAgent_ = {
@@ -835,6 +841,8 @@ declare namespace API {
     data?: Agent[];
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListConfig_ = {
@@ -844,6 +852,8 @@ declare namespace API {
     data?: Config[];
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListLlm_ = {
@@ -853,6 +863,8 @@ declare namespace API {
     data?: Llm[];
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntityAgent_ = {
@@ -861,6 +873,8 @@ declare namespace API {
     data?: ListResponseEntityAgent_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntityLinkedHashMapStringObject_ = {
@@ -869,6 +883,8 @@ declare namespace API {
     data?: ListResponseEntityLinkedHashMapStringObject_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntityLlm_ = {
@@ -877,6 +893,8 @@ declare namespace API {
     data?: ListResponseEntityLlm_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntityOrgProperty_ = {
@@ -885,6 +903,8 @@ declare namespace API {
     data?: ListResponseEntityOrgProperty_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntityOrgVO_ = {
@@ -893,6 +913,8 @@ declare namespace API {
     data?: ListResponseEntityOrgVO_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysDictItem_ = {
@@ -901,6 +923,8 @@ declare namespace API {
     data?: ListResponseEntitySysDictItem_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysDictVO_ = {
@@ -909,6 +933,8 @@ declare namespace API {
     data?: ListResponseEntitySysDictVO_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysFile_ = {
@@ -917,6 +943,8 @@ declare namespace API {
     data?: ListResponseEntitySysFile_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysLog_ = {
@@ -925,6 +953,8 @@ declare namespace API {
     data?: ListResponseEntitySysLog_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysMenu_ = {
@@ -933,6 +963,8 @@ declare namespace API {
     data?: ListResponseEntitySysMenu_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysNoticeVO_ = {
@@ -941,6 +973,8 @@ declare namespace API {
     data?: ListResponseEntitySysNoticeVO_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysRole_ = {
@@ -949,6 +983,8 @@ declare namespace API {
     data?: ListResponseEntitySysRole_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysRoleVO_ = {
@@ -957,6 +993,8 @@ declare namespace API {
     data?: ListResponseEntitySysRoleVO_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysTag_ = {
@@ -965,6 +1003,8 @@ declare namespace API {
     data?: ListResponseEntitySysTag_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysUserVO_ = {
@@ -973,6 +1013,8 @@ declare namespace API {
     data?: ListResponseEntitySysUserVO_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntitySysWarning_ = {
@@ -981,6 +1023,8 @@ declare namespace API {
     data?: ListResponseEntitySysWarning_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntityWritingMaterial_ = {
@@ -989,6 +1033,8 @@ declare namespace API {
     data?: ListResponseEntityWritingMaterial_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListResponseEntityWritingTopic_ = {
@@ -997,6 +1043,8 @@ declare namespace API {
     data?: ListResponseEntityWritingTopic_;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListString_ = {
@@ -1006,6 +1054,8 @@ declare namespace API {
     data?: string[];
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListSysUserDetailVO_ = {
@@ -1015,6 +1065,8 @@ declare namespace API {
     data?: SysUserDetailVO[];
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListWritingMaterial_ = {
@@ -1024,6 +1076,8 @@ declare namespace API {
     data?: WritingMaterial[];
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityListWritingTopic_ = {
@@ -1033,6 +1087,8 @@ declare namespace API {
     data?: WritingTopic[];
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityLlm_ = {
@@ -1041,6 +1097,8 @@ declare namespace API {
     data?: Llm;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityLong_ = {
@@ -1050,6 +1108,8 @@ declare namespace API {
     data?: number;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityMapStringString_ = {
@@ -1059,6 +1119,8 @@ declare namespace API {
     data?: Record<string, any>;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityOrg_ = {
@@ -1067,6 +1129,8 @@ declare namespace API {
     data?: Org;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityOrgVO_ = {
@@ -1075,6 +1139,8 @@ declare namespace API {
     data?: OrgVO;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityServerInfo_ = {
@@ -1083,6 +1149,8 @@ declare namespace API {
     data?: ServerInfo;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityString_ = {
@@ -1092,6 +1160,8 @@ declare namespace API {
     data?: string;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntitySysDictItem_ = {
@@ -1100,6 +1170,8 @@ declare namespace API {
     data?: SysDictItem;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntitySysNoticeVO_ = {
@@ -1108,6 +1180,8 @@ declare namespace API {
     data?: SysNoticeVO;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntitySysTag_ = {
@@ -1116,6 +1190,8 @@ declare namespace API {
     data?: SysTag;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntitySysUserDetailVO_ = {
@@ -1124,6 +1200,8 @@ declare namespace API {
     data?: SysUserDetailVO;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntitySysUserVO_ = {
@@ -1132,6 +1210,8 @@ declare namespace API {
     data?: SysUserVO;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityVoid_ = {
@@ -1139,6 +1219,8 @@ declare namespace API {
     code?: number;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityWritingMaterial_ = {
@@ -1147,6 +1229,8 @@ declare namespace API {
     data?: WritingMaterial;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ResponseEntityWritingTopic_ = {
@@ -1155,6 +1239,8 @@ declare namespace API {
     data?: WritingTopic;
     /** 基本信息 */
     message?: string;
+    /** 是否成功 */
+    success?: boolean;
   };
 
   type ServerInfo = {
@@ -1834,21 +1920,25 @@ declare namespace API {
     keyword?: string;
     pageNo?: number;
     pageSize?: number;
+    topicId?: number;
   };
 
   type WritingTopic = {
     createAt?: string;
     description?: string;
     id?: number;
+    materials?: WritingMaterial[];
     points?: string;
     title?: string;
     updateAt?: string;
   };
 
   type WritingTopicDto = {
+    agentId?: number;
     createAt?: string;
     description?: string;
     id?: number;
+    materials?: WritingMaterial[];
     points?: string;
     title?: string;
     updateAt?: string;
