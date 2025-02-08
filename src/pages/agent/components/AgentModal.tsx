@@ -21,10 +21,15 @@ const AgentModal: React.FC<Props> = (props) => {
   return (
     <ModalForm
       title={current ? '编辑Agent' : '新建Agent'}
-      width={500}
+      width={800}
       open={visible}
       onOpenChange={onVisibleChange}
       initialValues={current}
+      modalProps={{
+        destroyOnClose: true,
+        maskClosable: false,
+        style: { top: 20 },
+      }}
       onFinish={async (values) => {
         try {
           if (current?.id) {
@@ -40,37 +45,49 @@ const AgentModal: React.FC<Props> = (props) => {
         }
       }}
     >
-      <ProFormText
-        name="agentName"
-        label="Agent名称"
-        rules={[{ required: true, message: '请输入Agent名称' }]}
-      />
-      <ProFormSelect
-        name="agentModelId"
-        label="LLM模型"
-        rules={[{ required: true, message: '请选择LLM模型' }]}
-        request={async () => {
-          // 这里需要调用获取模型列表的接口
-          const { data } = await listLlm({});
-          return (data || []).map((item: any) => ({
-            label: item.modelName,
-            value: item.id,
-          }));
-        }}
-      />
-      <ProFormSelect
-        name="agentType"
-        label="Agent类型"
-        rules={[{ required: true, message: '请选择Agent类型' }]}
-        options={[
-          { label: '类型1', value: 'type1' },
-          { label: '类型2', value: 'type2' },
-        ]}
-      />
+      <div style={{ display: 'flex', gap: '16px' }}>
+        <ProFormText
+          name="agentName"
+          label="Agent名称"
+          rules={[{ required: true, message: '请输入Agent名称' }]}
+          width="sm"
+        />
+        <ProFormSelect
+          name="agentModelId"
+          label="LLM模型"
+          rules={[{ required: true, message: '请选择LLM模型' }]}
+          width="sm"
+          request={async () => {
+            const { data } = await listLlm({});
+            return (data || []).map((item: any) => ({
+              label: item.modelName,
+              value: item.id,
+            }));
+          }}
+        />
+        <ProFormSelect
+          name="agentType"
+          label="Agent类型"
+          rules={[{ required: true, message: '请选择Agent类型' }]}
+          width="sm"
+          options={[
+            { label: '类型1', value: 'type1' },
+            { label: '类型2', value: 'type2' },
+          ]}
+        />
+      </div>
       <ProFormTextArea
         name="agentPrompt"
         label="提示词"
         rules={[{ required: true, message: '请输入提示词' }]}
+        fieldProps={{
+            rows:40,
+          showCount: true,
+          style: { 
+            fontSize: '14px',
+            fontFamily: 'monospace',
+          },
+        }}
       />
     </ModalForm>
   );

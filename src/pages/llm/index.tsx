@@ -3,7 +3,7 @@ import { deleteLlm, pageListLlm } from '@/services/writing/llm';
 import type { Llm } from '@/services/writing/typings';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Space, message } from 'antd';
+import { Button, Space, message, Modal, Popconfirm } from 'antd';
 import React, { useState } from 'react';
 import LlmForm from './components/LlmForm';
 
@@ -45,9 +45,17 @@ const LlmManagement: React.FC = () => {
           <Button type="link" onClick={() => handleEdit(record)}>
             编辑
           </Button>
-          <Button type="link" danger onClick={() => handleDelete(record)}>
-            删除
-          </Button>
+          <Popconfirm
+            title="确认删除"
+            description={`确定要删除模型"${record.modelName}"吗？`}
+            onConfirm={() => handleDelete(record)}
+            okText="确认"
+            cancelText="取消"
+          >
+            <Button type="link" danger>
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },

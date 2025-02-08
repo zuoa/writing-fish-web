@@ -1,10 +1,9 @@
-
-import { fetchWritingMaterial,createWritingMaterial } from '@/services/writing/writingMaterial';
-import { getWritingTopic } from '@/services/writing/writingTopic';
-
-
 // @ts-ignore
-import type { Topic } from '@/services/demo/typings';
+import { fetchWritingMaterial,createWritingMaterial } from "@/services/writing/writingMaterial";
+// @ts-ignore
+import { getWritingTopic } from "@/services/writing/writingTopic";
+
+
 import {
   CloseOutlined,
   CopyOutlined,
@@ -31,6 +30,8 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './detail.less';
+import WritingMaterial = API.WritingMaterial;
+import WritingTopic = API.WritingTopic;
 
 const { Paragraph, Title, Text } = Typography;
 const { TextArea } = Input;
@@ -39,13 +40,12 @@ const { TabPane } = Tabs;
 const TopicDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<Topic>();
+  const [editData, setEditData] = useState<WritingTopic>();
   const [isMaterialModalVisible, setIsMaterialModalVisible] = useState(false);
   const [materialForm] = Form.useForm();
   const [isUrlFetching, setIsUrlFetching] = useState(false);
   const [activeKey, setActiveKey] = useState('1');
   const [selectedAgent, setSelectedAgent] = useState<string>();
-  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [generatedTitle, setGeneratedTitle] = useState<string>();
   const [generatedContent, setGeneratedContent] = useState<string>();
 
@@ -63,13 +63,14 @@ const TopicDetail: React.FC = () => {
     try {
       // 保存每个素材
       for (const material of editData.materials) {
-        await createWritingMaterial({
-          topic_id: parseInt(id || ''),
-          flag_primary: material.type === 'primary' ? '1' : '0',
+        const materialDto: API.WritingMaterialDto = {
+          topicId: parseInt(id || ''),
+          flagPrimary: material.type === 'primary' ? 1 : 0,
           title: material.title || '',
           url: material.url || '',
           content: material.content || '',
-        });
+        };
+        await createWritingMaterial(materialDto);
       }
 
       message.success('保存成功');
@@ -117,16 +118,15 @@ const TopicDetail: React.FC = () => {
 
   const handleAddMaterial = async (values: any) => {
     try {
-      // 先调用接口保存素材
-      const resp = await createWritingMaterial({
-        topic_id: parseInt(id || ''),
+      const materialDto: API.WritingMaterialDto = {
+        topicId: parseInt(id || ''),
         ...values,
-      });
+      };
+      const resp = await createWritingMaterial(materialDto);
 
       const newMaterials = [...(editData?.materials || []), resp.data];
-      setEditData((prev) => ({ ...prev, materials: newMaterials }));
+      setEditData((prev: WritingTopic | undefined) => ({ ...prev, materials: newMaterials }));
 
-      // 关闭弹窗并重置表单
       setIsMaterialModalVisible(false);
       materialForm.resetFields();
       message.success('素材添加成功');
@@ -154,13 +154,13 @@ const TopicDetail: React.FC = () => {
     >
       <Form form={materialForm} layout="vertical" onFinish={handleAddMaterial}>
         <Form.Item
-          name="flag_primary"
+          name="flagPrimary"
           label="素材类型"
           rules={[{ required: true, message: '请选择素材类型' }]}
         >
           <Radio.Group>
-            <Radio value="1">主要素材</Radio>
-            <Radio value="0">辅助素材</Radio>
+            <Radio value={1}>主要素材</Radio>
+            <Radio value={0}>辅助素材</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -231,7 +231,7 @@ const TopicDetail: React.FC = () => {
           <Input
             value={editData?.title}
             onChange={(e) =>
-              setEditData((prev) => ({ ...prev, title: e.target.value }))
+              setEditData((prev: WritingTopic | undefined) => ({ ...prev, title: e.target.value }))
             }
           />
         ) : (
@@ -246,7 +246,7 @@ const TopicDetail: React.FC = () => {
             rows={4}
             value={editData?.description}
             onChange={(e) =>
-              setEditData((prev) => ({ ...prev, description: e.target.value }))
+              setEditData((prev: WritingTopic | undefined) => ({ ...prev, description: e.target.value }))
             }
           />
         ) : (
@@ -261,7 +261,7 @@ const TopicDetail: React.FC = () => {
             rows={4}
             value={editData?.points}
             onChange={(e) =>
-              setEditData((prev) => ({ ...prev, points: e.target.value }))
+              setEditData((prev: WritingTopic | undefined) => ({ ...prev, points: e.target.value }))
             }
           />
         ) : (
@@ -284,9 +284,10 @@ const TopicDetail: React.FC = () => {
         okText: '确定',
         cancelText: '取消',
         onOk: () => {
-          const newMaterials = [...editData?.materials];
+          if (!editData?.materials) return;
+          const newMaterials = [...editData.materials];
           newMaterials.splice(index, 1);
-          setEditData((prev) => ({ ...prev, materials: newMaterials }));
+          setEditData((prev: WritingTopic | undefined) => prev ? ({ ...prev, materials: newMaterials }) : prev);
           message.success('删除成功');
         },
       });
@@ -296,17 +297,17 @@ const TopicDetail: React.FC = () => {
       <div className={styles.content}>
         <Tabs
           type="card"
-          items={editData?.materials.map((material, index) => ({
+          items={editData?.materials?.map((material:WritingMaterial, index:number) => ({
             label: (
               <span
                 style={{
                   padding: '2px 4px',
                   color: '#fff',
                   backgroundColor:
-                    material.flag_primary === 1 ? '#3333cc' : '#999',
+                    material.flagPrimary === 1 ? '#3333cc' : '#999',
                 }}
               >
-                素材{index + 1} ({material.flag_primary === 1 ? '主' : '辅'} )
+                素材{index + 1} ({material.flagPrimary === 1 ? '主' : '辅'})
                 <DeleteOutlined
                   className={styles.deleteIcon}
                   onClick={(e) => {
@@ -316,7 +317,7 @@ const TopicDetail: React.FC = () => {
                 />
               </span>
             ),
-            key: String(material.id),
+            key: String(material.id || index),
             children: (
               <div className={styles.materialContent}>
                 <div className={styles.materialItem}>
@@ -326,27 +327,26 @@ const TopicDetail: React.FC = () => {
                   <div className={styles.value}>
                     {isEditing ? (
                       <Radio.Group
-                        value={material.type}
+                        value={material.flagPrimary === 1 ? 'primary' : 'secondary'}
                         onChange={(e) => {
-                          const newMaterials = [...editData?.materials];
+                          if (!editData?.materials) return;
+                          const newMaterials = [...editData.materials];
                           newMaterials[index] = {
                             ...material,
-                            type: e.target.value,
+                            flagPrimary: e.target.value === 'primary' ? 1 : 0,
                           };
-                          setEditData((prev) => ({
+                          setEditData((prev: WritingTopic | undefined) => prev ? ({
                             ...prev,
                             materials: newMaterials,
-                          }));
+                          }) : prev);
                         }}
                       >
                         <Radio value="primary">主要素材</Radio>
                         <Radio value="secondary">辅助素材</Radio>
                       </Radio.Group>
                     ) : (
-                      <Tag
-                        color={material.type === 'primary' ? 'blue' : 'green'}
-                      >
-                        {material.type === 'primary' ? '主要素材' : '辅助素材'}
+                      <Tag color={material.flagPrimary === 1 ? 'blue' : 'green'}>
+                        {material.flagPrimary === 1 ? '主要素材' : '辅助素材'}
                       </Tag>
                     )}
                   </div>
@@ -361,15 +361,16 @@ const TopicDetail: React.FC = () => {
                       <Input
                         value={material.title}
                         onChange={(e) => {
-                          const newMaterials = [...editData?.materials];
+                          if (!editData?.materials) return;
+                          const newMaterials = [...editData.materials];
                           newMaterials[index] = {
                             ...material,
                             title: e.target.value,
                           };
-                          setEditData((prev) => ({
+                          setEditData((prev: WritingTopic | undefined) => prev ? ({
                             ...prev,
                             materials: newMaterials,
-                          }));
+                          }) : prev);
                         }}
                       />
                     ) : (
@@ -387,15 +388,16 @@ const TopicDetail: React.FC = () => {
                       <Input
                         value={material.url}
                         onChange={(e) => {
-                          const newMaterials = [...editData?.materials];
+                          if (!editData?.materials) return;
+                          const newMaterials = [...editData.materials];
                           newMaterials[index] = {
                             ...material,
                             url: e.target.value,
                           };
-                          setEditData((prev) => ({
+                          setEditData((prev: WritingTopic | undefined) => prev ? ({
                             ...prev,
                             materials: newMaterials,
-                          }));
+                          }) : prev);
                         }}
                       />
                     ) : (
@@ -420,15 +422,16 @@ const TopicDetail: React.FC = () => {
                         rows={30}
                         value={material.content}
                         onChange={(e) => {
-                          const newMaterials = [...editData?.materials];
+                          if (!editData?.materials) return;
+                          const newMaterials = [...editData.materials];
                           newMaterials[index] = {
                             ...material,
                             content: e.target.value,
                           };
-                          setEditData((prev) => ({
+                          setEditData((prev: WritingTopic | undefined) => prev ? ({
                             ...prev,
                             materials: newMaterials,
-                          }));
+                          }) : prev);
                         }}
                       />
                     ) : (
@@ -465,7 +468,7 @@ const TopicDetail: React.FC = () => {
       { label: '专业写手', value: 'professional' },
       { label: '科技写手', value: 'tech' },
       { label: '文学写手', value: 'literature' },
-    ];
+    ] as const;
 
     const handleExecute = () => {
       if (!selectedAgent) {
@@ -473,11 +476,10 @@ const TopicDetail: React.FC = () => {
         return;
       }
 
-      message.loading('正在生成内容...', 0);
+      message.loading({ content: '正在生成内容...', key: 'contentGen' });
       // TODO: 调用后端接口
       setTimeout(() => {
-        message.destroy();
-        // 模拟生成的内容
+        message.destroy('contentGen');
         setGeneratedTitle('AI 智能写作：让内容创作更高效');
         setGeneratedContent(
           '人工智能技术的快速发展正在改变着内容创作的方式。通过深度学习和自然语言处理技术，AI写手能够理解上下文、把握主题重点，生成符合人类阅读习惯的高质量内容。\n\n不仅如此，AI写手还能够快速处理和整合大量素材，从中提炼出关键信息，大大提高了内容创作的效率。这使得创作者能够将更多精力投入到创意和策略的构思中。\n\n然而，AI写手并非要取代人类写手，而是要成为人类写手的得力助手。通过人机协作，能够实现内容创作的提质增效，为用户带来更好的阅读体验。',
@@ -566,13 +568,13 @@ const TopicDetail: React.FC = () => {
       { label: '知乎', value: 'zhihu' },
       { label: '头条号', value: 'toutiao' },
       { label: '企业官网', value: 'website' },
-    ];
+    ] as const;
 
     const handleDistribute = (channel: string) => {
-      message.loading('正在分发...', 0);
+      message.loading({ content: '正在分发...', key: 'distribute' });
       // TODO: 调用后端接口
       setTimeout(() => {
-        message.destroy();
+        message.destroy('distribute');
         message.success('分发成功');
       }, 1500);
     };
