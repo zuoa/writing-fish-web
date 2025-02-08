@@ -9,9 +9,13 @@ declare namespace API {
   };
 
   type Agent = {
+    /** Llm 模型 ID */
     agentModelId?: number;
+    /** Agent 名称 */
     agentName?: string;
+    /** Agent 提示词 */
     agentPrompt?: string;
+    /** Agent 类型 */
     agentType?: string;
     createAt?: string;
     id?: number;
@@ -19,9 +23,13 @@ declare namespace API {
   };
 
   type AgentDto = {
+    /** Llm 模型 ID */
     agentModelId?: number;
+    /** Agent 名称 */
     agentName?: string;
+    /** Agent 提示词 */
     agentPrompt?: string;
+    /** Agent 类型 */
     agentType?: string;
     createAt?: string;
     id?: number;
@@ -488,6 +496,13 @@ declare namespace API {
     total?: number;
   };
 
+  type ListResponseEntityWritingMaterial_ = {
+    list?: WritingMaterial[];
+    page?: number;
+    size?: number;
+    total?: number;
+  };
+
   type ListResponseEntityWritingTopic_ = {
     list?: WritingTopic[];
     page?: number;
@@ -510,6 +525,7 @@ declare namespace API {
 
   type Llm = {
     createAt?: string;
+    httpProxy?: string;
     id?: number;
     modelAlias?: string;
     modelApiKey?: string;
@@ -520,11 +536,13 @@ declare namespace API {
 
   type LlmDto = {
     createAt?: string;
+    httpProxy?: string;
     id?: number;
     modelAlias?: string;
     modelApiKey?: string;
     modelBaseUrl?: string;
     modelName?: string;
+    testPrompt?: string;
     updateAt?: string;
   };
 
@@ -965,6 +983,14 @@ declare namespace API {
     message?: string;
   };
 
+  type ResponseEntityListResponseEntityWritingMaterial_ = {
+    /** 编码 */
+    code?: number;
+    data?: ListResponseEntityWritingMaterial_;
+    /** 基本信息 */
+    message?: string;
+  };
+
   type ResponseEntityListResponseEntityWritingTopic_ = {
     /** 编码 */
     code?: number;
@@ -987,6 +1013,15 @@ declare namespace API {
     code?: number;
     /** 返回对象 */
     data?: SysUserDetailVO[];
+    /** 基本信息 */
+    message?: string;
+  };
+
+  type ResponseEntityListWritingMaterial_ = {
+    /** 编码 */
+    code?: number;
+    /** 返回对象 */
+    data?: WritingMaterial[];
     /** 基本信息 */
     message?: string;
   };
@@ -1102,6 +1137,14 @@ declare namespace API {
   type ResponseEntityVoid_ = {
     /** 编码 */
     code?: number;
+    /** 基本信息 */
+    message?: string;
+  };
+
+  type ResponseEntityWritingMaterial_ = {
+    /** 编码 */
+    code?: number;
+    data?: WritingMaterial;
     /** 基本信息 */
     message?: string;
   };
@@ -1749,6 +1792,48 @@ declare namespace API {
     size?: number;
     /** statementCode */
     statementCode: string;
+  };
+
+  type WritingMaterial = {
+    /** 素材内容 */
+    content?: string;
+    createAt?: string;
+    /** 是否主要素材 */
+    flagPrimary?: number;
+    id?: number;
+    /** 状态 */
+    status?: string;
+    /** 素材名称 */
+    title?: string;
+    /** 选题ID */
+    topicId?: number;
+    updateAt?: string;
+    /** 素材URL */
+    url?: string;
+  };
+
+  type WritingMaterialDto = {
+    /** 素材内容 */
+    content?: string;
+    createAt?: string;
+    /** 是否主要素材 */
+    flagPrimary?: number;
+    id?: number;
+    /** 状态 */
+    status?: string;
+    /** 素材名称 */
+    title?: string;
+    /** 选题ID */
+    topicId?: number;
+    updateAt?: string;
+    /** 素材URL */
+    url?: string;
+  };
+
+  type WritingMaterialListPageQuery = {
+    keyword?: string;
+    pageNo?: number;
+    pageSize?: number;
   };
 
   type WritingTopic = {

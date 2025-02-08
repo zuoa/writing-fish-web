@@ -1,20 +1,36 @@
-import { getMaterial, addMaterial, fetchUrl } from '@/services/demo/MaterialController';
+
+import { fetchWritingMaterial,createWritingMaterial } from '@/services/writing/writingMaterial';
+import { getWritingTopic } from '@/services/writing/writingTopic';
+
+
 // @ts-ignore
 import type { Topic } from '@/services/demo/typings';
 import {
   CloseOutlined,
+  CopyOutlined,
   DeleteOutlined,
   EditOutlined,
   LeftOutlined,
   PlusOutlined,
   SaveOutlined,
-  CopyOutlined,
 } from '@ant-design/icons';
-import { Button, Card, Input, Radio, Space, Tabs, Tag, Typography, message, Modal, Form, Select, Checkbox } from 'antd';
+import { history, useParams } from '@umijs/max';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Form,
+  Input,
+  message,
+  Modal,
+  Radio,
+  Space,
+  Tabs,
+  Tag,
+  Typography,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
-import { history, useParams } from 'umi';
 import styles from './detail.less';
-import { getTopic } from '@/services/demo/TopicController';
 
 const { Paragraph, Title, Text } = Typography;
 const { TextArea } = Input;
@@ -27,14 +43,14 @@ const TopicDetail: React.FC = () => {
   const [isMaterialModalVisible, setIsMaterialModalVisible] = useState(false);
   const [materialForm] = Form.useForm();
   const [isUrlFetching, setIsUrlFetching] = useState(false);
-  const [activeKey, setActiveKey] = useState("1");
+  const [activeKey, setActiveKey] = useState('1');
   const [selectedAgent, setSelectedAgent] = useState<string>();
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [generatedTitle, setGeneratedTitle] = useState<string>();
   const [generatedContent, setGeneratedContent] = useState<string>();
 
   useEffect(() => {
-    getTopic({ id: parseInt(id || '') }).then((res) => {
+    getWritingTopic({ id: parseInt(id || '') }).then((res) => {
       if (res.success) {
         setEditData(res.data);
       }
@@ -43,11 +59,11 @@ const TopicDetail: React.FC = () => {
 
   const handleSave = async () => {
     if (!editData) return;
-    
+
     try {
       // 保存每个素材
       for (const material of editData.materials) {
-        await addMaterial({
+        await createWritingMaterial({
           topic_id: parseInt(id || ''),
           flag_primary: material.type === 'primary' ? '1' : '0',
           title: material.title || '',
@@ -55,7 +71,7 @@ const TopicDetail: React.FC = () => {
           content: material.content || '',
         });
       }
-      
+
       message.success('保存成功');
       setIsEditing(false);
     } catch (error) {
@@ -66,7 +82,7 @@ const TopicDetail: React.FC = () => {
   const handleCancel = () => {
     setIsEditing(false);
     // 重新加载数据，放弃修改
-    getTopic({ id: parseInt(id || '') }).then((res) => {
+    getWritingTopic({ id: parseInt(id || '') }).then((res) => {
       if (res.success) {
         setEditData(res.data);
       }
@@ -85,10 +101,10 @@ const TopicDetail: React.FC = () => {
       setIsUrlFetching(true);
       message.loading('正在解析链接...', 0);
 
-      const resp = await fetchUrl({ url });
+      const resp = await fetchWritingMaterial({url});
       materialForm.setFieldsValue({
         title: resp?.data?.title,
-        content: resp?.data?.content
+        content: resp?.data?.content,
       });
       message.destroy();
       message.success('解析成功');
@@ -102,14 +118,14 @@ const TopicDetail: React.FC = () => {
   const handleAddMaterial = async (values: any) => {
     try {
       // 先调用接口保存素材
-      const resp = await addMaterial({
+      const resp = await createWritingMaterial({
         topic_id: parseInt(id || ''),
-        ...values
+        ...values,
       });
 
       const newMaterials = [...(editData?.materials || []), resp.data];
       setEditData((prev) => ({ ...prev, materials: newMaterials }));
-      
+
       // 关闭弹窗并重置表单
       setIsMaterialModalVisible(false);
       materialForm.resetFields();
@@ -136,11 +152,7 @@ const TopicDetail: React.FC = () => {
       footer={null}
       width={900}
     >
-      <Form
-        form={materialForm}
-        layout="vertical"
-        onFinish={handleAddMaterial}
-      >
+      <Form form={materialForm} layout="vertical" onFinish={handleAddMaterial}>
         <Form.Item
           name="flag_primary"
           label="素材类型"
@@ -152,21 +164,15 @@ const TopicDetail: React.FC = () => {
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item
-          name="url"
-          label="链接地址"
-        >
+        <Form.Item name="url" label="链接地址">
           <Input.Group compact>
-            <Form.Item
-              name="url"
-              noStyle
-            >
-              <Input 
-                style={{ width: 'calc(100% - 88px)' }} 
-                placeholder="输入链接后点击提取" 
+            <Form.Item name="url" noStyle>
+              <Input
+                style={{ width: 'calc(100% - 88px)' }}
+                placeholder="输入链接后点击提取"
               />
             </Form.Item>
-            <Button 
+            <Button
               type="primary"
               onClick={handleUrlFetch}
               loading={isUrlFetching}
@@ -190,17 +196,14 @@ const TopicDetail: React.FC = () => {
           label="素材内容"
           rules={[{ required: true, message: '请输入素材内容' }]}
         >
-          <TextArea 
-            rows={4} 
-            placeholder="请输入素材内容" 
-          />
+          <TextArea rows={30} placeholder="请输入素材内容" />
         </Form.Item>
 
         <Form.Item className={styles.formFooter}>
           <Button type="primary" htmlType="submit">
             确定
           </Button>
-          <Button 
+          <Button
             onClick={() => {
               setIsMaterialModalVisible(false);
               materialForm.resetFields();
@@ -285,7 +288,7 @@ const TopicDetail: React.FC = () => {
           newMaterials.splice(index, 1);
           setEditData((prev) => ({ ...prev, materials: newMaterials }));
           message.success('删除成功');
-        }
+        },
       });
     };
 
@@ -295,7 +298,14 @@ const TopicDetail: React.FC = () => {
           type="card"
           items={editData?.materials.map((material, index) => ({
             label: (
-              <span style={{ padding: '2px 4px', color: '#fff', backgroundColor: material.flag_primary === 1 ? '#3333cc' : '#999' }}>
+              <span
+                style={{
+                  padding: '2px 4px',
+                  color: '#fff',
+                  backgroundColor:
+                    material.flag_primary === 1 ? '#3333cc' : '#999',
+                }}
+              >
                 素材{index + 1} ({material.flag_primary === 1 ? '主' : '辅'} )
                 <DeleteOutlined
                   className={styles.deleteIcon}
@@ -407,7 +417,7 @@ const TopicDetail: React.FC = () => {
                   <div className={styles.value}>
                     {isEditing ? (
                       <TextArea
-                        rows={4}
+                        rows={30}
                         value={material.content}
                         onChange={(e) => {
                           const newMaterials = [...editData?.materials];
@@ -440,11 +450,14 @@ const TopicDetail: React.FC = () => {
 
   // 内容生产 Tab
   const handleCopy = (text: string, type: '标题' | '内容') => {
-    navigator.clipboard.writeText(text).then(() => {
-      message.success(`${type}已复制到剪贴板`);
-    }).catch(() => {
-      message.error('复制失败，请手动复制');
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        message.success(`${type}已复制到剪贴板`);
+      })
+      .catch(() => {
+        message.error('复制失败，请手动复制');
+      });
   };
 
   const renderContentGeneration = () => {
@@ -466,7 +479,9 @@ const TopicDetail: React.FC = () => {
         message.destroy();
         // 模拟生成的内容
         setGeneratedTitle('AI 智能写作：让内容创作更高效');
-        setGeneratedContent('人工智能技术的快速发展正在改变着内容创作的方式。通过深度学习和自然语言处理技术，AI写手能够理解上下文、把握主题重点，生成符合人类阅读习惯的高质量内容。\n\n不仅如此，AI写手还能够快速处理和整合大量素材，从中提炼出关键信息，大大提高了内容创作的效率。这使得创作者能够将更多精力投入到创意和策略的构思中。\n\n然而，AI写手并非要取代人类写手，而是要成为人类写手的得力助手。通过人机协作，能够实现内容创作的提质增效，为用户带来更好的阅读体验。');
+        setGeneratedContent(
+          '人工智能技术的快速发展正在改变着内容创作的方式。通过深度学习和自然语言处理技术，AI写手能够理解上下文、把握主题重点，生成符合人类阅读习惯的高质量内容。\n\n不仅如此，AI写手还能够快速处理和整合大量素材，从中提炼出关键信息，大大提高了内容创作的效率。这使得创作者能够将更多精力投入到创意和策略的构思中。\n\n然而，AI写手并非要取代人类写手，而是要成为人类写手的得力助手。通过人机协作，能够实现内容创作的提质增效，为用户带来更好的阅读体验。',
+        );
         message.success('内容生成成功');
       }, 1500);
     };
@@ -481,7 +496,7 @@ const TopicDetail: React.FC = () => {
               onChange={(e) => setSelectedAgent(e.target.value)}
             >
               <Space direction="vertical">
-                {agentOptions.map(option => (
+                {agentOptions.map((option) => (
                   <Radio key={option.value} value={option.value}>
                     {option.label}
                   </Radio>
@@ -515,12 +530,10 @@ const TopicDetail: React.FC = () => {
                     复制
                   </Button>
                 </div>
-                <div className={styles.contentBox}>
-                  {generatedTitle}
-                </div>
+                <div className={styles.contentBox}>{generatedTitle}</div>
               </div>
             )}
-            
+
             {generatedContent && (
               <div className={styles.section}>
                 <div className={styles.sectionHeader}>
@@ -571,7 +584,7 @@ const TopicDetail: React.FC = () => {
           <div className={styles.optionsGroup}>
             <Checkbox.Group>
               <Space direction="vertical">
-                {channelOptions.map(option => (
+                {channelOptions.map((option) => (
                   <Checkbox key={option.value} value={option.value}>
                     {option.label}
                     <Button
@@ -608,10 +621,10 @@ const TopicDetail: React.FC = () => {
       </div>
 
       <Card>
-        <Tabs 
+        <Tabs
           defaultActiveKey="1"
           tabBarExtraContent={
-            activeKey === "1" ? (
+            activeKey === '1' ? (
               !isEditing ? (
                 <Button
                   type="primary"
@@ -629,8 +642,8 @@ const TopicDetail: React.FC = () => {
                   >
                     保存
                   </Button>
-                  <Button 
-                    icon={<CloseOutlined />} 
+                  <Button
+                    icon={<CloseOutlined />}
                     onClick={handleCancel}
                     style={{ marginLeft: 8 }}
                   >
@@ -638,7 +651,7 @@ const TopicDetail: React.FC = () => {
                   </Button>
                 </>
               )
-            ) : activeKey === "2" ? (
+            ) : activeKey === '2' ? (
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
@@ -650,34 +663,25 @@ const TopicDetail: React.FC = () => {
           }
           onChange={(key) => setActiveKey(key)}
         >
-          <TabPane 
-            tab={
-              <span style={{ marginRight: 24 }}>选题信息</span>
-            }
+          <TabPane
+            tab={<span style={{ marginRight: 24 }}>选题信息</span>}
             key="1"
           >
             {renderBasicInfo()}
           </TabPane>
-          <TabPane 
-            tab={
-              <span style={{ marginRight: 24 }}>内容素材</span>
-            }
+          <TabPane
+            tab={<span style={{ marginRight: 24 }}>内容素材</span>}
             key="2"
           >
             {renderMaterials()}
           </TabPane>
-          <TabPane 
-            tab={
-              <span style={{ marginRight: 24 }}>内容生产</span>
-            }
+          <TabPane
+            tab={<span style={{ marginRight: 24 }}>内容生产</span>}
             key="3"
           >
             {renderContentGeneration()}
           </TabPane>
-          <TabPane 
-            tab="渠道分发"
-            key="4"
-          >
+          <TabPane tab="渠道分发" key="4">
             {renderChannelDistribution()}
           </TabPane>
         </Tabs>

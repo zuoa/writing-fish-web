@@ -70,7 +70,7 @@ export async function testLlm(
   body: API.LlmDto,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResponseEntityVoid_>(`/api/llm/test`, {
+  return request<API.ResponseEntityString_>(`/api/llm/test`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

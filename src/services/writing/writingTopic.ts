@@ -19,10 +19,25 @@ export async function createWritingTopic(
 
 /** 删除 POST /writingTopic/delete */
 export async function deleteWritingTopic(
-  body: API.WritingTopic,
+  body: API.WritingTopicDto,
   options?: { [key: string]: any },
 ) {
   return request<API.ResponseEntityVoid_>(`/api/writingTopic/delete`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 查询单个 POST /writingTopic/get */
+export async function getWritingTopic(
+  body: API.WritingTopicDto,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResponseEntityWritingTopic_>(`/api/writingTopic/get`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -3,21 +3,15 @@ import { Card, Button, Modal, Form, Input, List, message, Radio, Tabs, Tag } fro
 import { PlusOutlined, LinkOutlined, EditOutlined, FileTextOutlined } from '@ant-design/icons';
 import './index.less';
 import styles from './index.less';
-import { addMaterial, fetchUrl } from '@/services/demo/MaterialController';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 import { createWritingTopic, listWritingTopic, pageListWritingTopic } from '@/services/writing/writingTopic';
-import type { WritingTopic } from '@/services/writing/typings';
+import { fetchWritingMaterial } from '@/services/writing/writingMaterial';
+// @ts-ignore
+import type { WritingTopic, WritingMaterial } from '@/services/writing/typings';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
-interface Material {
-  id: number;
-  type: 'main' | 'auxiliary';  // 主要素材或辅助素材
-  title: string;  // 新增标题字段
-  content: string;
-  inputType: 'url' | 'manual';
-}
 
 const TopicsPage: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -70,7 +64,7 @@ const TopicsPage: React.FC = () => {
       setIsUrlFetching(true);
       message.loading('正在解析链接...', 0);
 
-      const resp = await fetchUrl({url})
+      const resp = await fetchWritingMaterial(url)
       // 实际项目中这里应该调用后端API
       // await new Promise(resolve => setTimeout(resolve, 1500));
       
@@ -144,7 +138,7 @@ const TopicsPage: React.FC = () => {
                     <List
                       size="small"
                       dataSource={topic.materials}
-                      renderItem={material => (
+                      renderItem={(material : WritingMaterial) => (
                         <List.Item>
                           <div className={styles.materialItem}>
                             <div className={styles.materialHeader}>

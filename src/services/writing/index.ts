@@ -18,6 +18,7 @@ import * as sysRole from './sysRole';
 import * as sysTag from './sysTag';
 import * as sysUser from './sysUser';
 import * as sysWarning from './sysWarning';
+import * as writingMaterial from './writingMaterial';
 import * as writingTopic from './writingTopic';
 export default {
   agent,
@@ -36,5 +37,6 @@ export default {
   sysTag,
   sysUser,
   sysWarning,
+  writingMaterial,
   writingTopic,
 };
